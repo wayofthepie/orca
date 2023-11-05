@@ -19,8 +19,8 @@
             buildInputs = [ rust-bin.stable.latest.default ];
           };
           packages.default = rustPlatform.buildRustPackage {
-            pname = "myproject";
-            version = "1.0.0";
+            pname = "orca";
+            version = "0.0.1";
             src = ./.;
 
             cargoLock = {
