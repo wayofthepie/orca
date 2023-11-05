@@ -22,11 +22,9 @@
             pname = "orca";
             version = "0.0.1";
             src = ./.;
-
             cargoLock = {
               lockFile = ./Cargo.lock;
             };
-
           };
         }
       );
