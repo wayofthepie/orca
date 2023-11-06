@@ -5,9 +5,12 @@ use std::time::{Duration, Instant};
 use hcloud::{
     apis::{
         configuration::Configuration,
-        servers_api::{self, CreateServerParams, GetServerParams},
+        servers_api::{self, CreateServerParams, DeleteServerParams, GetServerParams},
     },
-    models::{server::Status, CreateServerRequest, CreateServerResponse, GetServerResponse},
+    models::{
+        server::Status, CreateServerRequest, CreateServerResponse, DeleteServerResponse,
+        GetServerResponse,
+    },
 };
 use hetzner::{
     client::HCloud,
@@ -62,6 +65,16 @@ impl OrcaHCloud {
             .await?)
     }
 
+    pub async fn delete_server(
+        &self,
+        server_id: i64,
+    ) -> Result<DeleteServerResponse, Box<dyn std::error::Error>> {
+        Ok(self
+            .hcloud
+            .delete_server(DeleteServerParams { id: server_id })
+            .await?)
+    }
+
     pub async fn wait_until_running(
         &self,
         server_id: i64,
@@ -88,7 +101,7 @@ mod test {
     use async_trait::async_trait;
     use hcloud::{
         apis::servers_api::{
-            self, CreateServerError, CreateServerParams, DeleteServerError, DeleteServerParams,
+            CreateServerError, CreateServerParams, DeleteServerError, DeleteServerParams,
             GetServerError, GetServerParams,
         },
         models::{
@@ -147,6 +160,14 @@ mod test {
         let hcloud = Box::<FakeClient>::default();
         let orca_hcloud = OrcaHCloud { hcloud };
         let response = orca_hcloud.get_server(12345).await;
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    async fn orca_delete_server_should_be_ok() {
+        let hcloud = Box::<FakeClient>::default();
+        let orca_hcloud = OrcaHCloud { hcloud };
+        let response = orca_hcloud.delete_server(12345).await;
         assert!(response.is_ok());
     }
 
