@@ -88,9 +88,12 @@ mod test {
     use async_trait::async_trait;
     use hcloud::{
         apis::servers_api::{
-            CreateServerError, CreateServerParams, GetServerError, GetServerParams,
+            self, CreateServerError, CreateServerParams, DeleteServerError, DeleteServerParams,
+            GetServerError, GetServerParams,
         },
-        models::{server::Status, CreateServerResponse, GetServerResponse, Server},
+        models::{
+            server::Status, CreateServerResponse, DeleteServerResponse, GetServerResponse, Server,
+        },
     };
 
     use crate::{HCloud, HCloudLocation, HCloudServerType, OrcaHCloud};
@@ -108,11 +111,19 @@ mod test {
         ) -> Result<CreateServerResponse, hcloud::apis::Error<CreateServerError>> {
             Ok(CreateServerResponse::default())
         }
+
         async fn get_server(
             &self,
             _: GetServerParams,
         ) -> Result<GetServerResponse, hcloud::apis::Error<GetServerError>> {
             Ok(self.get_server_response.clone().unwrap_or_default())
+        }
+
+        async fn delete_server(
+            &self,
+            _: DeleteServerParams,
+        ) -> Result<DeleteServerResponse, hcloud::apis::Error<DeleteServerError>> {
+            Ok(DeleteServerResponse::default())
         }
     }
 
