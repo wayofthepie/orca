@@ -1,17 +1,17 @@
-use std::{
-    fmt::Display,
-    time::{Duration, Instant},
-};
+mod hetzner;
 
-use async_trait::async_trait;
+use std::time::{Duration, Instant};
+
 use hcloud::{
     apis::{
         configuration::Configuration,
-        servers_api::{
-            self, CreateServerError, CreateServerParams, GetServerError, GetServerParams,
-        },
+        servers_api::{self, CreateServerParams, GetServerParams},
     },
     models::{server::Status, CreateServerRequest, CreateServerResponse, GetServerResponse},
+};
+use hetzner::{
+    client::HCloud,
+    models::{HCloudLocation, HCloudServerType},
 };
 
 #[tokio::main]
@@ -27,72 +27,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-enum HCloudServerType {
-    CAX11,
-}
-
-impl Display for HCloudServerType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = match self {
-            HCloudServerType::CAX11 => "cax11",
-        };
-        write!(f, "{}", s)
-    }
-}
-
-#[derive(Debug)]
-enum HCloudLocation {
-    FSN1,
-}
-
-impl Display for HCloudLocation {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = match self {
-            HCloudLocation::FSN1 => "fsn1",
-        };
-        write!(f, "{}", s)
-    }
-}
-
-#[async_trait]
-trait HCloud {
-    async fn create_server(
-        &self,
-        params: CreateServerParams,
-    ) -> Result<CreateServerResponse, hcloud::apis::Error<CreateServerError>>;
-
-    async fn get_server(
-        &self,
-        params: GetServerParams,
-    ) -> Result<GetServerResponse, hcloud::apis::Error<GetServerError>>;
-}
-
-struct HCloudClient {
-    configuration: Configuration,
-}
-
-#[async_trait]
-impl HCloud for HCloudClient {
-    async fn create_server(
-        &self,
-        params: CreateServerParams,
-    ) -> Result<CreateServerResponse, hcloud::apis::Error<CreateServerError>> {
-        servers_api::create_server(&self.configuration, params).await
-    }
-    async fn get_server(
-        &self,
-        params: GetServerParams,
-    ) -> Result<GetServerResponse, hcloud::apis::Error<GetServerError>> {
-        servers_api::get_server(&self.configuration, params).await
-    }
-}
-
-struct OrcaHCloud {
+pub struct OrcaHCloud {
     hcloud: Box<dyn HCloud>,
 }
 
 impl OrcaHCloud {
-    async fn create_server(
+    pub async fn create_server(
         &self,
         name: &str,
         image_id: &str,
@@ -112,7 +52,7 @@ impl OrcaHCloud {
         Ok(self.hcloud.create_server(params).await?)
     }
 
-    async fn get_server(
+    pub async fn get_server(
         &self,
         server_id: i64,
     ) -> Result<GetServerResponse, Box<dyn std::error::Error>> {
@@ -122,7 +62,7 @@ impl OrcaHCloud {
             .await?)
     }
 
-    async fn wait_until_running(
+    pub async fn wait_until_running(
         &self,
         server_id: i64,
         timeout: Duration,

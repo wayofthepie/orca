@@ -17,6 +17,7 @@
         {
           devShells.default = mkShell {
             buildInputs = [ rust-bin.stable.latest.default ];
+            RUST_SRC_PATH = "${rustPlatform.rustLibSrc}";
           };
           packages.default = rustPlatform.buildRustPackage {
             pname = "orca";
