@@ -32,6 +32,12 @@ pub struct HCloudClient {
     configuration: Configuration,
 }
 
+impl HCloudClient {
+    pub fn new(configuration: Configuration) -> Self {
+        Self { configuration }
+    }
+}
+
 #[async_trait]
 impl HCloud for HCloudClient {
     async fn create_server(

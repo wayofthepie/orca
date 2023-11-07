@@ -180,4 +180,21 @@ mod test {
         assert!(response.is_err());
         assert_eq!(response.unwrap_err().to_string(), "Timeout 10ms reached!");
     }
+
+    #[tokio::test]
+    async fn orca_wait_until_running_should_be_ok_when_server_running() {
+        let hcloud = Box::new(FakeClient {
+            get_server_response: Some(GetServerResponse {
+                server: Some(Box::new(Server {
+                    status: Status::Running,
+                    ..Server::default()
+                })),
+            }),
+        });
+        let orca_hcloud = OrcaHCloud { hcloud };
+        let response = orca_hcloud
+            .wait_until_running(12345, Duration::from_millis(10), Duration::from_millis(1))
+            .await;
+        assert!(response.is_ok());
+    }
 }
