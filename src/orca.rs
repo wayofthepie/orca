@@ -133,7 +133,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn orca_create_server_should_be_ok() {
+    async fn create_server_should_be_ok() {
         let hcloud = Box::<FakeClient>::default();
         let orca_hcloud = OrcaHCloud { hcloud };
         let response = orca_hcloud
@@ -148,7 +148,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn orca_get_server_should_be_ok() {
+    async fn get_server_should_be_ok() {
         let hcloud = Box::<FakeClient>::default();
         let orca_hcloud = OrcaHCloud { hcloud };
         let response = orca_hcloud.get_server(12345).await;
@@ -156,7 +156,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn orca_delete_server_should_be_ok() {
+    async fn delete_server_should_be_ok() {
         let hcloud = Box::<FakeClient>::default();
         let orca_hcloud = OrcaHCloud { hcloud };
         let response = orca_hcloud.delete_server(12345).await;
@@ -164,7 +164,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn orca_wait_until_running_should_timeout_after_given_time() {
+    async fn wait_until_running_should_timeout_after_given_time() {
         let hcloud = Box::new(FakeClient {
             get_server_response: Some(GetServerResponse {
                 server: Some(Box::new(Server {
@@ -182,7 +182,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn orca_wait_until_running_should_be_ok_when_server_running() {
+    async fn wait_until_running_should_be_ok_when_server_running() {
         let hcloud = Box::new(FakeClient {
             get_server_response: Some(GetServerResponse {
                 server: Some(Box::new(Server {
